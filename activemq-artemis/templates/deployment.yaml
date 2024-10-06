@@ -42,12 +42,12 @@ spec:
               protocol: TCP
           livenessProbe:
             tcpSocket:
-              port: stomp
+              port: {{ .Values.stomp.port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
-              port: stomp
+              port: {{ .Values.stomp.port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           resources:

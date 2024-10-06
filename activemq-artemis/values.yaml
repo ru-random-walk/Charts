@@ -23,7 +23,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8161
+  port: 61613
 
 stomp:
   port: 61613
