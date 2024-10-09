@@ -34,20 +34,17 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
+            - name: STOMP
               containerPort: {{ .Values.service.port }}
-              protocol: TCP
-            - name: stomp
-              containerPort: {{ .Values.stomp.port }}
               protocol: TCP
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.stomp.port }}
+              port: {{ .Values.service.port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.stomp.port }}
+              port: {{ .Values.service.port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           resources:

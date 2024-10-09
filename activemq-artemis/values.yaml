@@ -34,9 +34,6 @@ service:
   type: ClusterIP
   port: 61613
 
-stomp:
-  port: 61613
-
 ingress:
   enabled: false
   className: ""
