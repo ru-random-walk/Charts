@@ -8,6 +8,7 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
         random_walk -> google_oauth_provider "Uses for authorization"
     }
 
+
     configuration {
         scope softwaresystem
     }
