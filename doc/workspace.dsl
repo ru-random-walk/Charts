@@ -11,31 +11,48 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
                 }
             }
             group "Backend" {
-                chat_service = container "Chat service" "Service for user chatting"
-                auth_service = container "Auth service" "Service for user authentication/authorization"
-                matcher_service = container "Matcher service" "Service for user appointment matching"
-                club_service = container "Club service" "Service for user club joining"
-                group "Infrastructure" {
-                    postgres_db = container "Postgres Database" "Storage for user authentication data, messages, appointments and clubs" {
+                api_gateway = container "Api Gateway" "Service for routing traffic"
+                group "Chat service" {
+                    chat_service = container "Chat service" "Service for user chatting"
+                    postgres_db_chat_schema = container "Postgres Database [chat schema]" "Storage for messages and chats" {
                         tags "DatabaseTag"
                     }
                     active_mq_artemis = container "ActiveMQ Artemis" "Responsible for routing messages in Chat service instances" {
                         tags "MessageQueueTag"
                     }
-                }
 
-                chat_service -> postgres_db "Read/Write messages"
-                auth_service -> postgres_db "Read/Write user authentication data"
-                matcher_service -> postgres_db "Read/Write appointment data"
-                club_service -> postgres_db "Read/Write club data"
-                chat_service -> active_mq_artemis "Send message from user"
-                active_mq_artemis -> chat_service "Send message for user in Chat service instances"
+                    active_mq_artemis -> chat_service "Send message for user in Chat service instances"
+                    chat_service -> postgres_db_chat_schema "Read/Write messages"
+                    chat_service -> active_mq_artemis "Send message from user"
+                }
+                group "Auth service" {
+                    auth_service = container "Auth service" "Service for user authentication/authorization"
+                    postgres_db_auth_schema = container "Postgres Database [auth schema]" "Storage for user authentication data" {
+                        tags "DatabaseTag"
+                    }
+                    auth_service -> postgres_db_auth_schema "Read/Write user authentication data"
+                }
+                group "Matcher service" {
+                    matcher_service = container "Matcher service" "Service for user appointment matching"
+                    postgres_db_matcher_schema = container "Postgres Database [matcher schema]" "Storage for appointments and walk prefferences data" {
+                        tags "DatabaseTag"
+                    }
+                    matcher_service -> postgres_db_matcher_schema "Read/Write appointment data"
+                }
+                group "Club service" {
+                    club_service = container "Club service" "Service for user club joining"
+                    postgres_db_club_schema = container "Postgres Database [club schema]" "Storage for clubs and forms data" {
+                        tags "DatabaseTag"
+                    }
+                    club_service -> postgres_db_club_schema "Read/Write club data"
+                }
             }
 
-            app -> chat_service "Use for sending and receiving messages"
-            app -> auth_service "Use for login / logout / refresh access token"
-            app -> matcher_service "Use for editing appointment preferences / available time slots"
-            app -> club_service "Use for joining to groups / sending form and invitations / creating and administrating groups"
+            app -> api_gateway "Use for sending request and receiving some data"
+            api_gateway -> chat_service "Use for sending and receiving messages"
+            api_gateway -> auth_service "Use for login / logout / refresh access token"
+            api_gateway -> matcher_service "Use for editing appointment preferences / available time slots"
+            api_gateway -> club_service "Use for joining to groups / sending form and invitations / creating and administrating groups"
         }
         google_oauth_provider = softwareSystem "OAuth Google provider" "Authorization provider for simple and fast login"
 
