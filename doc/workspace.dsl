@@ -66,6 +66,7 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
                 background #51fc9b
             }
             element "Container" {
+                color black
                 background #04de63
             }
             relationship "Relationship" {
