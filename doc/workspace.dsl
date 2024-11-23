@@ -12,6 +12,9 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
             }
             group "Backend" {
                 api_gateway = container "Api Gateway" "Service for routing traffic"
+                kafka = container "Kafka" "Broker for sending events through microservices" {
+                    tags "MessageQueueTag"
+                }
                 group "Chat service" {
                     chat_service = container "Chat service" "Service for user chatting"
                     postgres_db_chat_schema = container "Postgres Database [chat schema]" "Storage for messages and chats" {
@@ -46,6 +49,9 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
                     }
                     club_service -> postgres_db_club_schema "Read/Write club data"
                 }
+
+                matcher_service -> kafka "Send creating chats events after matching"
+                kafka -> chat_service "Consume creating chat event and do it"
             }
 
             app -> api_gateway "Use for sending request and receiving some data"
