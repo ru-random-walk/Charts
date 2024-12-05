@@ -42,17 +42,17 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - "/opt/kafka/bin/kafka-topics.sh --zookeeper zookeeper.zookeeper.svc.cluster.local:2181 --list"
+                - "/usr/bin/kafka-topics --zookeeper {{ (index .Values.env 1).value }} --list"
             initialDelaySeconds: 30
             periodSeconds: 10
-          readinessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - "/opt/kafka/bin/kafka-topics.sh --zookeeper zookeeper.zookeeper.svc.cluster.local:2181 --list"
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            readinessProbe:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - "/usr/bin/kafka-topics --zookeeper {{ (index .Values.env 1).value }} --list"
+              initialDelaySeconds: 5
+              periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
