@@ -94,7 +94,7 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
             }
             relationship "Relationship" {
                 thickness 1
-                color yellow
+                color black
             }
             element "MobileAppTag" {
                 shape MobileDevicePortrait
