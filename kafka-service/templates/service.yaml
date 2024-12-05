@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "zookeeper.fullname" . }}
+  name: {{ include "kafka-service.fullname" . }}
   labels:
-    {{- include "zookeeper.labels" . | nindent 4 }}
+    {{- include "kafka-service.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "zookeeper.selectorLabels" . | nindent 4 }}
+    {{- include "kafka-service.selectorLabels" . | nindent 4 }}

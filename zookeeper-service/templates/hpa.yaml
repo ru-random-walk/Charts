@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "zookeeper.fullname" . }}
+  name: {{ include "zookeeper-service.fullname" . }}
   labels:
-    {{- include "zookeeper.labels" . | nindent 4 }}
+    {{- include "zookeeper-service.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "zookeeper.fullname" . }}
+    name: {{ include "zookeeper-service.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
