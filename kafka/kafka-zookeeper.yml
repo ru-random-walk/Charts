@@ -27,7 +27,7 @@ spec:
   ports:
     - port: 9092
       targetPort: 9092
-  type: LoadBalancer
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -103,3 +103,7 @@ spec:
             #          value: zookeeper-cluster:2181
             - name: ALLOW_PLAINTEXT_LISTENER
               value: "yes"
+            - name: KAFKA_CFG_LISTENERS
+              value: "PLAINTEXT://0.0.0.0:9092"
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "PLAINTEXT://kafka-cluster.kafka.svc.cluster.local:9092"
