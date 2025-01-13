@@ -53,6 +53,8 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
                 chat_service -> active_mq_artemis "Send message from user" {
                     tag "STOMPLinkTag"
                 }
+                auth_service -> active_mq_artemis "Send info about registered users in matcher-service"
+                active_mq_artemis -> matcher_service "Get info about registered users from auth-service"
             }
 
             app -> api_gateway "Use for sending request and receiving some data"
