@@ -133,13 +133,13 @@ image:
 auth:
   ## @param auth.enablePostgresUser Assign a password to the "postgres" admin user. Otherwise, remote access will be blocked for this user
   ##
-  enablePostgresUser: false
+  enablePostgresUser: true
   ## @param auth.postgresPassword Password for the "postgres" admin user. Ignored if `auth.existingSecret` is provided
   ##
   postgresPassword: ""
   ## @param auth.username Name for a custom user to create
   ##
-  username: "pg-user-random-walk"
+  username: ""
   ## @param auth.password Password for the custom user to create. Ignored if `auth.existingSecret` is provided
   ##
   password: ""
@@ -480,11 +480,11 @@ primary:
   ##
   resources:
     limits:
-      cpu: 256m
-      memory: 512Mi
+      cpu: 500m
+      memory: 1Gi
     requests:
-      cpu: 20m
-      memory: 128Mi
+      cpu: 250m
+      memory: 512Mi
   ## Pod Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   ## @param primary.podSecurityContext.enabled Enable security context
