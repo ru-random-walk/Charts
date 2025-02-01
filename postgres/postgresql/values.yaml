@@ -168,8 +168,6 @@ auth:
   ##
   secretKeys:
     adminPasswordKey: postgres-password
-    userPasswordKey: password
-    replicationPasswordKey: replication-password
   ## @param auth.usePasswordFiles Mount credentials as a files instead of using an environment variable
   ##
   usePasswordFiles: false
