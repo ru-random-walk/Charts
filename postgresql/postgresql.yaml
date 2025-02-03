@@ -14,25 +14,12 @@ spec:
   hostPath:
     path: "/mnt/data"
 ---
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: postgres-pv-claim
-  labels:
-    app: postgres
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 15Gi
----
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: postgres
 spec:
+  serviceName: "postgres"
   replicas: 1
   selector:
     matchLabels:
@@ -56,11 +43,18 @@ spec:
               value: random_walk_postgres
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: postgredb
-      volumes:
-        - name: postgredb
-          persistentVolumeClaim:
-            claimName: postgres-pv-claim
+              name: postgres-pv-claim
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-pv-claim
+        labels:
+          app: postgres
+      spec:
+        accessModes: ["ReadWriteMany"]
+        storageClassName: "manual"
+        resources:
+          requests:
+            storage: 15Gi
 ---
 apiVersion: v1
 kind: Service
