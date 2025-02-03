@@ -51,6 +51,9 @@ spec:
           envFrom:
             - secretRef:
                 name: postgresql-secret
+          env:
+            - name: POSTGRES_DB
+              value: random_walk_postgres
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgredb
