@@ -12,13 +12,21 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
             }
             group "Backend" {
                 api_gateway = container "Api Gateway" "Service for routing traffic"
+                kafka = container "Kafka" "Broker for sending events through microservices" {
+                    tags "MessageQueueTag"
+                }
                 group "Chat service" {
                     chat_service = container "Chat service" "Service for user chatting"
                     postgres_db_chat_schema = container "Postgres Database [chat schema]" "Storage for messages and chats" {
                         tags "DatabaseTag"
                     }
+                    active_mq_artemis = container "ActiveMQ Artemis" "Responsible for routing messages in Chat service instances" {
+                        tags "MessageQueueTag"
+                    }
 
+                    active_mq_artemis -> chat_service "Send message for user in Chat service instances"
                     chat_service -> postgres_db_chat_schema "Read/Write messages"
+                    chat_service -> active_mq_artemis "Send message from user"
                 }
                 group "Auth service" {
                     auth_service = container "Auth service" "Service for user authentication/authorization"
@@ -41,20 +49,9 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
                     }
                     club_service -> postgres_db_club_schema "Read/Write club data"
                 }
-                active_mq_artemis = container "ActiveMQ Artemis" "Responsible for routing messages in Chat service instances" {
-                    tags "MessageQueueTag"
-                }
 
-                matcher_service -> active_mq_artemis "Send creating chats events after matching"
-                active_mq_artemis -> chat_service "Consume creating chat event and do it"
-                active_mq_artemis -> chat_service "Send message for user in Chat service instances" {
-                    tag "STOMPLinkTag"
-                }
-                chat_service -> active_mq_artemis "Send message from user" {
-                    tag "STOMPLinkTag"
-                }
-                auth_service -> active_mq_artemis "Send info about registered users in matcher-service"
-                active_mq_artemis -> matcher_service "Get info about registered users from auth-service"
+                matcher_service -> kafka "Send creating chats events after matching"
+                kafka -> chat_service "Consume creating chat event and do it"
             }
 
             app -> api_gateway "Use for sending request and receiving some data"
@@ -113,10 +110,6 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
                 background red
                 strokeWidth 10
                 width 500
-            }
-            relationship "STOMPLinkTag" {
-                color green
-                thickness 2
             }
         }
     }
