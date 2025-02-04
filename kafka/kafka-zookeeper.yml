@@ -93,8 +93,11 @@ spec:
             runAsUser: 0
           resources:
             requests:
-              memory: 128Mi
-              cpu: 10m
+              memory: 1Gi
+              cpu: 100m
+            limits:
+              memory: 5Gi
+              cpu: 1000m
           ports:
             - containerPort: 9092
           env:

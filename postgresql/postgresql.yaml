@@ -1,0 +1,73 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv-volume
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 15Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: bitnami/postgresql:16.4.0-debian-12-r9
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: postgresql-secret
+          env:
+            - name: POSTGRES_DB
+              value: random_walk_postgres
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-pv-claim
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-pv-claim
+        labels:
+          app: postgres
+      spec:
+        accessModes: ["ReadWriteMany"]
+        storageClassName: "manual"
+        resources:
+          requests:
+            storage: 15Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  type: NodePort
+  ports:
+    - name: postgres
+      nodePort: 32527
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
