@@ -49,9 +49,22 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
                     }
                     club_service -> postgres_db_club_schema "Read/Write club data"
                 }
+                group "Twitter service" {
+                    twitter_service = container "Twitter service" "Service for sending notifications through events"
+                    postgres_db_twitter_schema = container "Postgres Database [twitter schema]" "Storage for notifications data" {
+                        tags "DatabaseTag"
+                    }
+                    twitter_service -> postgres_db_twitter_schema "Read/Write twitter data"
+                }
 
                 matcher_service -> kafka "Send creating chats events after matching"
                 kafka -> chat_service "Consume creating chat event and do it"
+
+                club_service -> kafka "Send notification"
+                matcher_service -> kafka "Send notification"
+                auth_service -> kafka "Send notification"
+                chat_service -> kafka "Send notification"
+                kafka -> twitter_service "Receive notifications and send them to the users"
             }
 
             app -> api_gateway "Use for sending request and receiving some data"
@@ -60,10 +73,20 @@ workspace "Random Walk Architecture" "Full Architecture in C4 Notation" {
             api_gateway -> matcher_service "Use for editing appointment preferences / available time slots"
             api_gateway -> club_service "Use for joining to groups / sending form and invitations / creating and administrating groups"
         }
-        google_oauth_provider = softwareSystem "OAuth Google provider" "Authorization provider for simple and fast login"
+        google_oauth_provider = softwareSystem "OAuth Google provider" "Google Authorization provider for simple and fast login"
+        yandex_oauth_provider = softwareSystem "OAuth Yandex provider" "Yandex Authorization provider for simple and fast login"
+        vk_oauth_provider = softwareSystem "OAuth VK provider" "VK Authorization provider for simple and fast login"
+        email = softwareSystem "Email" "Abstract Email service"
+
+        google_firebase = softwareSystem "Firebase" "Service for receiving notifications and sending them to the users"
 
         user -> random_walk "Uses"
         random_walk -> google_oauth_provider "Uses for authorization"
+        random_walk -> yandex_oauth_provider "Uses for authorization"
+        random_walk -> vk_oauth_provider "Uses for authorization"
+        random_walk -> email "Uses for secret code confirmation and login"
+
+        random_walk -> google_firebase "Uses for sending notifications"
     }
 
     views {
