@@ -43,6 +43,8 @@ spec:
               value: random_walk_postgres
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRESQL_MAX_CONNECTIONS
+              value: '400'
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-pv-claim
